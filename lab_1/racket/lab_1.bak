@@ -1,0 +1,11 @@
+(define xor (lambda (x y)
+    (cond
+      ((eq? x y) '0)
+      (#t '1)
+    )
+))
+
+(xor #f #f)
+(xor #f #t)
+(xor #t #f)
+(xor #t #t)
