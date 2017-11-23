@@ -1,0 +1,23 @@
+;16
+(define atom_count (lambda (el)
+  (cond
+     ((eq? el '()) 0)
+     ((atom? el) 1)
+     ((list? el) (+ (atom_count (car el)) (atom_count (cdr el))))
+     ((pair? el) (+ (atom_count (car el)) (atom_count (cdr el))))
+   )
+))
+
+(define atom? (lambda (x)
+    (cond
+         ((pair? x) #f)
+         ((list? x) #f)
+         (#t #t)
+     )
+))
+
+(atom_count '(1 #t 2 0.1 (0 6 (0 #t . 5)  ((((((((((((((((((((((((8((((())))))))))))))))))))))))))))) (8 . 9) () 7) 3 4 . 5))
+(atom_count '())
+(atom_count '(1 . 2))
+(atom_count '1)
+
