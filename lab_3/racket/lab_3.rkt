@@ -1,0 +1,49 @@
+(define atom? (lambda (x) (cond ((pair? x) #f) ((list? x) #f) (#t #t))))
+(define and? (lambda (x y) (cond ((eq? x #f) #f) ((eq? y #f) #f) (#t #t))))
+(define or? (lambda (x y) (cond (x #t) (y #t) (#t #f))))
+(define not? (lambda (x) (cond (x #f)(#t #t))))
+
+(define equals? (lambda (x y)(cond
+  ((eq? x y) #t)
+  ((or? (eq? x '()) (eq? y '())) #f)
+  ((or? (atom? x) (atom? y)) #f)
+  ((and? (and? (pair? x) (pair? y)) (and? (pair? (car x)) (eq? (cdr x) '()))) (equals? (car x) y))
+  ((and? (and? (pair? x) (pair? y)) (and? (pair? (car y)) (eq? (cdr y) '()))) (equals? x (car y)))
+  ((not? (equals? (car x) (car y))) #f)
+  (#t (equals? (cdr x) (cdr y)))
+)))
+
+(define in? (lambda (list x)(cond
+  ((eq? list '()) #f)
+  ((atom? list) (eq? list x))
+  ((and? (pair? list) (atom? (cdr list))) (eq? list x))
+  ((equals? (car list) x) #t)
+  ((equals? (cdr list) x) #t)
+  (#t (in? (cdr list) x))
+)))
+
+(define not_in? (lambda (list x)(not? (in? list x))))
+
+(define symmetric_difference (lambda (x y)(symmetric_difference_recursion y x (symmetric_difference_recursion x y '()))))
+
+(define symmetric_difference_recursion (lambda (x ry list) (cond
+  ((eq? x '()) list)
+  ((atom? x) (symmetric_difference_recursion (cons x '()) ry list))
+  ((and? (list? x) (and? (not_in? ry (car x)) (not_in? list (car x)))) (symmetric_difference_recursion (cdr x) ry (cons (car x) list)))
+  ((list? x) (symmetric_difference_recursion (cdr x) ry list))
+  ((and? (pair? x) (and? (pair? (cdr x)) (and? (not_in? ry (car x)) (not_in? list (car x))))) (symmetric_difference_recursion (cdr x) ry (cons (car x) list)))
+  ((and? (pair? x) (pair? (cdr x))) (symmetric_difference_recursion (cdr x) ry list))
+  ((and? (pair? x) (and? (not_in? ry x) (not_in? list x))) (symmetric_difference_recursion '() ry (cons x list)))
+  ((pair? x) (symmetric_difference_recursion '() ry list))
+)))
+
+(symmetric_difference 'q '(a b a . b))
+(symmetric_difference '(4 5 (2 3 . 4) () 2 3 (2 3 .4)) '(() 6 1 (2 3 . 4) 2))
+(symmetric_difference '((a . b) (c . d) m . k) '(a b a . b))
+(symmetric_difference '(((1 . 2)) (3 . 4) 5 . 6) '((5 . 6) (3 . 7) 1 . 2))
+
+
+
+
+(define m (lambda (x) x))
+(m '(a b . (c . (d))))
