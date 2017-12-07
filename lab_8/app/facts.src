@@ -1,0 +1,33 @@
+﻿family(
+person("Vovan", "Ivanenko", dateOfBirth(31,01,1989), job("unemployed",0)),
+person("Marichka", "Ivanenko", dateOfBirth(16,06,1990), job("Rynok",4000)),
+[
+    person("Rayan-Gosling", "Ivanenko", dateOfBirth(24,02,2005), job("Jurnal 'Zapravka'",1000)),
+    person("BRayan-Gasleng", "Ivanenko", dateOfBirth(10,11,2001), job("Zapravka",3000))
+]
+).
+family(
+person("Kindrat", "Dudko", dateOfBirth(17,02,1983), job("unemployed",0)),
+person("Horpina", "Dudko", dateOfBirth(09,03,1985), job("Mular-ahtukaturna",11000)),
+[
+    person("Evgenia", "Dudko", dateOfBirth(21,08,2016), job("unemployed",100)),
+    person("Evgen", "Dudko", dateOfBirth(11,01,2014), job("unemployed",100))
+]
+).
+family(
+person("Igor", "Lapushenko", dateOfBirth(01,08,1980), job("unemployed",0)),
+person("Galya", "Lapushenko", dateOfBirth(06,05,1981), job("Shkola",1500)),
+[
+    person("Igor-Junior", "Lapushenko", dateOfBirth(24,02,2015), job("unemployed",100))
+]
+).
+family(
+person("Kolya", "Vbogy", dateOfBirth(07,09,1953), job("unemployed",0)),
+person("Lina", "Vboga", dateOfBirth(11,12,1952), job("Universitet",9500)),
+[
+    person("Mria", "Vboga", dateOfBirth(22,04,1983), job("Magazyn",3000)),
+    person("Nadia", "Vboga", dateOfBirth(13,07,1985), job("Supermarket",800)),
+    person("Lubov", "Vboga", dateOfBirth(18,11,1986), job("Gipermarket",4000)),
+    person("Vira", "Vboga", dateOfBirth(20,06,1988), job("Fotostudia",15000))
+]
+).
