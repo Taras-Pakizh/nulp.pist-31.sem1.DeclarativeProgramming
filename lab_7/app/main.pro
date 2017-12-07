@@ -47,11 +47,11 @@ clauses
         fail.
 
     run() :-
-        Array = [1 2 3],
         Sentence = readLine(),
         StrList = string::split(Sentence, ", "),
         writef("%\n", Sentence),
         transformation(StrList, StrList2),
+        writef("%\n", StrList2),
         Sentence1 = convertToString(StrList2),
         writef("%\n", Sentence1),
         fail.
