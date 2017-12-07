@@ -26,6 +26,26 @@ clauses
         child(Person, _, Parent),
         child(Parent, _, GrandMother).
 
+    grandGrandFather(P, GGF) :-
+        child(P, A, _),
+        child(A, B, _),
+        child(B, _, GGF).
+
+    grandGrandFather(P, GGF) :-
+        child(P, A, _),
+        child(A, _, B),
+        child(B, _, GGF).
+
+    grandGrandFather(P, GGF) :-
+        child(P, _, A),
+        child(A, B, _),
+        child(B, _, GGF).
+
+    grandGrandFather(P, GGF) :-
+        child(P, _, A),
+        child(A, _, B),
+        child(B, _, GGF).
+
     father_in_law(Person, FatherInLaw) :-
         married(Person, Woman),
         child(Woman, FatherInLaw, _).
@@ -74,7 +94,7 @@ clauses
     run() :-
         write("Всі баби: "),
         nl,
-        grandMother(_, _),
+        grandMother(_, GrandMother),
         write(" - Баба ", GrandMother),
         nl,
         fail.
