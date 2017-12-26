@@ -9,6 +9,7 @@ domains
 
 class facts - familyDB
     family : (person, person, personList).
+    father40unemployed : (person).
 
 constants
     currentYear = 2017.
@@ -21,46 +22,51 @@ clauses
         file::consult(FileName, familyDB).
 
 class predicates
-    childrenString : (personList Input [in], string Output [out]).
+    childrenString : (personList Input) -> string.
 clauses
-    childrenString([], "").
+    childrenString([]) = String :-
+        String = "".
 
-    childrenString([X1], X) :-
-        person(F, L, dateOfBirth(_, _, Y), job(J, In)) = X1,
-        X = concat(concat(F, " ", L), concat(" (", toString(currentYear - Y), " р.) ["), concat(J, " - ", concat(toString(In), " $]"))),
-        !.
+    childrenString([X1]) = String :-
+        String = personToString(X1).
 
-    childrenString([X1 | Y1], String) :-
-        childrenString(Y1, Str),
-        person(F, L, dateOfBirth(_, _, Y), job(J, In)) = X1,
-        Child = concat(concat(F, " ", L), concat(" (", toString(currentYear - Y), " р.) ["), concat(J, " - ", concat(toString(In), " $]"))),
-        String = concat(Child, " \n\t\t", Str).
+    childrenString([X1, X2 | Y1]) = String :-
+        String = concat(personToString(X1), " \n\t\t", childrenString([X2 | Y1])).
 
 class predicates
-    childrenIncome : (personList Input [in], integer Output [out]).
+    childrenIncome : (personList Input) -> integer.
 clauses
-    childrenIncome([], 0).
+    childrenIncome([]) = In :-
+        In = 0.
 
-    childrenIncome([X1], Sum) :-
-        person(_, _, _, job(_, Sum)) = X1,
-        !.
-
-    childrenIncome([X1 | Y1], Sum) :-
+    childrenIncome([X1 | Y1]) = Sum :-
         person(_, _, _, job(_, X)) = X1,
-        childrenIncome(Y1, Y),
-        Sum = X + Y.
+        Sum = X + childrenIncome(Y1).
 
 class predicates
-    childrenCount : (personList Input [in], integer Output [out]).
+    childrenCount : (personList Input) -> integer.
 clauses
-    childrenCount([], 0).
+    childrenCount([]) = Count :-
+        Count = 0.
 
-    childrenCount([_], 1) :-
-        !.
+    childrenCount([_ | Y1]) = Count :-
+        Count = childrenCount(Y1) + 1.
 
-    childrenCount([_ | Y1], Count) :-
-        childrenCount(Y1, Y),
-        Count = Y + 1.
+class predicates
+    personToString : (person) -> string.
+clauses
+    personToString(Person) = String :-
+        person(F, L, dateOfBirth(_, _, Y), job(J, In)) = Person,
+        String = concat(concat(F, " ", L), concat(" (", toString(currentYear - Y), " р.) ["), concat(J, " - ", concat(toString(In), " $]"))).
+
+class predicates
+    father : (string Job, integer Year, person Father [out], person Mother [out], personList Children [out]) nondeterm.
+clauses
+    father(Job, Year, Father, Mother, Children) :-
+        family(Father, Mother, Children),
+        person(_, _, dateOfBirth(_, _, Fy), job(Fj, _)) = Father,
+        Job = Fj,
+        currentYear - Fy < Year.
 
 clauses
     run() :-
@@ -69,22 +75,38 @@ clauses
         fail.
 
     run() :-
-        write("Дохід на одного члена сім'ї, в якій не працює батько, якому менше 40 років:"),
-        Job = "unemployed",
-        Year = 40,
-        family(Father, Mother, Children),
-        person(Mf, Ml, dateOfBirth(_, _, My), job(Mj, Min)) = Mother,
-        person(Ff, Fl, dateOfBirth(_, _, Fy), job(Fj, Fin)) = Father,
-        Job = Fj,
-        currentYear - Fy < Year,
-        childrenString(Children, C),
-        childrenIncome(Children, Cin),
-        childrenCount(Children, Cc),
+        write("\nDatabase:"),
+        father40unemployed(F),
+        write("\n", personToString(F)),
+        fail.
+
+    run() :-
+        write("\n\nДохід на одного члена сім'ї, в якій не працює батько, якому менше 40 років:"),
+        father("unemployed", 40, Father, Mother, Children),
+        assert(father40unemployed(Father)),
+        Father = person(_, Fl, _, job(_, Fin)),
+        Mother = person(_, _, _, job(_, Min)),
         write("\n\nСім'я: ", Fl),
-        write("\n\tБатько: ", Ff, " ", Fl, " (", currentYear - Fy, " р.) [", Fj, " - ", Fin, " $]"),
-        write("\n\tМати: ", Mf, " ", Ml, " (", currentYear - My, " р.) [", Mj, " - ", Min, " $]"),
-        write("\n\tДіти: \n\t\t", C),
-        write("\n\tДохід на особу: ", (Min + Fin + Cin) / (Cc + 2)),
+        write("\n\tБатько: ", personToString(Father)),
+        write("\n\tМати: ", personToString(Mother)),
+        write("\n\tДіти: \n\t\t", childrenString(Children)),
+        write("\n\tДохід на особу: ", (Min + Fin + childrenIncome(Children)) / (childrenCount(Children) + 2)),
+        fail.
+
+    run() :-
+        write("\n\nDatabase:"),
+        father40unemployed(F),
+        write("\n", personToString(F)),
+        fail.
+
+    run() :-
+        retract(father40unemployed(_)),
+        fail.
+
+    run() :-
+        write("\n\nDatabase:"),
+        father40unemployed(F),
+        write("\n", personToString(F)),
         fail.
 
     run() :-
